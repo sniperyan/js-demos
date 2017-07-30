@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+
+</body>
+<script>
+
+    //ES5通过构造函数，定义并生成新对象
+    function Point1(x,y){
+        this.x = x;
+        this.y = y;
+    }
+
+    Point1.prototype.toString = function () {
+        return '('+this.x+', '+this.y+')';
+    }
+    var p1 = new Point1(1,9)
+    console.log(p1.toString())
+
+    //ES6引入了Class（类）这个概念，作为对象的模板。通过class关键字，可以定义类。上面的代码用“类”改写
+    class Point2{
+        constructor(x,y){
+            this.x = x;
+            this.y = y;
+        }
+        toString() {
+            return '('+this.x+', '+this.y+')';
+        }
+    }
+    var p2 = new Point2(0,9)
+    console.log(p2.toString())
+
+    //Class之间可以通过extends关键字，实现继承。
+    class ColorPoint extends Point2 {
+
+        constructor(x, y, color) {
+            super(x, y); // 等同于super.constructor(x, y)
+            this.color = color;
+        }
+
+        toString() {
+            return this.color+' '+ super.toString();
+        }
+    }
+    var p3 = new ColorPoint(1,9,'red')
+    console.log(p3.toString())
+    //上面代码中，constructor方法和toString方法之中，都出现了super关键字，它指代父类的同名方法。
+    // 在constructor方法内，super指代父类的constructor方法；
+    /**
+     * 有一个地方，需要注意。类和模块的内部，默认就是严格模式，所以不需要使用use strict指定运行模式。考虑到未来所有的代码，
+     * 其实都是运行在模块之中，所以ES6实际上把整个语言升级到了严格模式。
+     */
+
+
+
+    /**
+     * ES6模块的设计思想，是尽量的静态化，使得编译时就能确定模块的依赖关系，以及输入和输出的变量。
+     * CommonJS和AMD模块，都只能在运行时确定这些东西。比如，CommonJS模块就是对象，输入时必须查找对象属性。
+     * ES6模块不是对象，而是通过export命令显式指定输出的代码，输入时也采用静态命令的形式。
+     * 所以，ES6可以在编译时就完成模块编译，效率要比CommonJS模块高。
+     */
+
+
+</script>
+</html>
