@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+
+</body>
+<script>
+    /**
+     * Iterator
+     * 遍历器（Iterator）是一种接口规格，任何对象只要部署这个接口，就可以完成遍历操作
+     *
+     * 遍历器提供了一个指针，指向当前对象的某个属性，使用next方法，就可以将指针移动到下一个属性。
+     * next方法返回一个包含value和done两个属性的对象。其中，value属性是当前遍历位置的值，
+     * done属性是一个布尔值，表示遍历是否结束
+     *
+     * 在ES6中，有三类数据结构原生具备Iterator接口：数组、类似数组的对象、Set和Map结构
+     * 其他数据结构（主要是对象）的Iterator接口都需要自己部署
+     *
+     * 一个对象如果要有Iterator接口，必须部署一个@@iterator方法（原型链上的对象具有该方法也可），
+     * 该方法部署在一个键名为Symbol.iterator的属性上，对应的键值是一个函数，该函数返回一个遍历器对象
+     */
+
+    let obj = {
+        data: [ 'hello', 'world' ],
+        [Symbol.iterator]() {
+            const self = this;
+            let index = 0;
+            return {
+                next() {
+                    if (index < self.data.length) {
+                        return {
+                            value: self.data[index++],
+                            done: false
+                        };
+                    } else {
+                        return { value: undefined, done: true };
+                    }
+                }
+            };
+        }
+    };
+    for(key of obj){
+        console.log(key)   //hello  world
+    }
+    let iterator = obj[Symbol.iterator]()  //得到一个遍历器
+    console.log(iterator.next())  //{value: "hello", done: false}
+    console.log(iterator.next()) //{value: "world", done: false}
+    console.log(iterator.next())  //  {value: undefined, done: true}
+
+    //for...in循环读取键名，for...of循环读取键值
+    var arr = ["a", "b", "c", "d"];
+    for (a in arr) {
+        console.log(a); // 0 1 2 3
+    }
+    for (a of arr) {
+        console.log(a); // a b c d
+    }
+
+
+
+
+
+
+
+
+
+</script>
+</html>
