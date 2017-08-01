@@ -23,3 +23,11 @@ console.log(process.title)
 
 //process.version：返回一个字符串，表示当前使用的 Node 版本，比如v7.10.0。
 console.log(process.version)
+
+/**
+ *
+ * process.exit([code]) code <integer> 结束状态码。默认为0。
+ * 它可以接受一个数值参数，如果参数大于0，表示执行失败；如果等于0表示执行成功。
+ *
+ */
+process.exit(1);
