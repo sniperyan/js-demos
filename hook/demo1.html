@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+
+</body>
+<script>
+    //举个高考加分的例子，比如获得过一等奖加20分，二等奖加10分，三等奖加5分。使用if else的话如下实现：
+    function student(name, score, praise) {
+        this.name = name;
+        this.score = score;
+        this.praise = praise;
+    }
+    function praiseAdd(students) {
+        var results = {};
+        for (var i in students) {
+            var curStudent = students[i];
+            var ret = curStudent.score;
+            if (curStudent.praise == 1) {
+                ret += 20;
+            } else if (curStudent.praise == 2) {
+                ret += 10;
+            } else if (curStudent.praise == 3) {
+                ret += 5;
+            }
+            results[curStudent.name] = ret;
+        }
+        return results;
+
+    }
+    var liming = new student("liming", 70, 1);
+    var liyi = new student("liyi", 90, 2);
+    var liuwei = new student("liuwei", 80, 3);
+    var ertuzi = new student("ertuzi", 85, 3);
+
+    var result = praiseAdd([liming, liyi, liuwei, ertuzi]);
+    for (var i in result) {
+        console.log("name:" + i + ",score:" + result[i]);
+    }
+</script>
+<script>
+    /**
+     * 钩子机制
+     * 简单的说，其实钩子机制就是利用一张表去匹配，而不是一次次的if条件判断
+     */
+    function student(name, score, praise) {
+        this.name = name;
+        this.score = score;
+        this.praise = praise;
+    }
+    var praiseList = {
+        1: 20,
+        2: 10,
+        3: 5
+    }
+    function praiseAdd(students) {
+        var results = {};
+        for (var i in students) {
+            var curStudent = students[i];
+            var ret = curStudent.score;
+            if (praiseList[curStudent.praise])
+                ret += praiseList[curStudent.praise];
+            results[curStudent.name] = ret;
+        }
+        return results;
+
+    }
+    var liming = new student("liming", 70, 1);
+    var liyi = new student("liyi", 90, 2);
+    var liuwei = new student("liuwei", 80, 3);
+    var ertuzi = new student("ertuzi", 85, 3);
+
+    var result = praiseAdd([liming, liyi, liuwei, ertuzi]);
+    for (var i in result) {
+        console.log("name:" + i + ",score:" + result[i]);
+    }
+</script>
+
+<script>
+    /**
+     * jQuery中大量的使用了钩子机制去做一些兼容。拿$.type方法为例
+     *
+     * 原生的 typeof 方法并不能区分出一个变量它是 Array 、RegExp 等 object 类型，jQuery 为了扩展 typeof 的表达力，因此有了 $.type 方法
+     * 针对一些特殊的对象（例如 null，Array，RegExp）也进行精准的类型判断
+     * 运用了钩子机制，判断类型前，将常见类型打表，先存于一个 Hash 表 class2type 里边
+     */
+    var class2type = {}; // 用于预存储一张类型表用于 hook
+    var core={};
+    //core_toString是定义了一个空对象，然后保存toString()方法。
+    //这样后边就可以直接调用Object.prototype.toString()方法，而不用每次都再去原型链上去找,
+    // 节约了很多开销，jQuery中做了很多这样的变量保存
+    var core_toString=core.toString;
+    var $ = {};
+
+    "Boolean Number String Function Array Date RegExp Object Error".split(" ").forEach((item,index)=>{
+        class2type["[object " + item + "]"] = item.toLowerCase()
+    })
+    // 这个方法的关键之处在于 class2type[core_toString.call(obj)]
+    // 可以使得 typeof obj 为 "object" 类型的得到更进一步的精确判断
+    // 这里因为 hook 的存在，省去了大量的 else if 判断
+    $.type = function (obj) {
+        if (obj == null){
+            return String(obj);
+        }
+        return typeof obj === "object" || typeof obj === "function" ?
+            class2type[core_toString.call(obj)] || "object" : typeof obj;
+    }
+    console.log($.type([1,2,3,4]))
+    console.log($.type(null))
+    console.log($.type(function () {
+        
+    }))
+    console.log($.type(new Date()))
+</script>
+</html>
