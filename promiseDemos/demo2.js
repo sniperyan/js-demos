@@ -40,7 +40,8 @@ var readfilePpromise = function (filePath, options) {
 }
 
 readfilePpromise('./demo1.html').then((data) => {
-    console.log(data.toString())
+    //console.log(data.toString())
+    console.log('success')
 }).then(()=>{
     return readfilePpromise('./demo12.html')
 }).then((data)=>{
@@ -48,6 +49,7 @@ readfilePpromise('./demo1.html').then((data) => {
 }).catch((err)=>{
     console.log(err)
 })
+
 
 
 
