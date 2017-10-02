@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title></title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+
+<body>
+
+</body>
+<script>
+    /**
+    在javascript里面有个原型链的概念，每一个函数都有一个prototype对象属性。
+    这样通过这个函数new出来的对象会自动具有__proto__属性指向函数的prototype对象。
+    说白了所有的实例对象都会共用一个prototype对象，并且调用一个属性或者方法时在自己上面找不到，
+    就会找__proto__对象有没有，之后一直往上追溯一直到找到为止。具体表现为：
+
+    */
+    function Animal(name){
+        this.name = name;
+    }
+    Animal.prototype.run = function(){
+        console.log(this.name + "is running!!");
+    }
+    var a = new Animal("a");
+    var b = new Animal("b");
+    console.log(Animal.prototype) //Animal {} 
+    console.log(Animal.prototype instanceof Object) //true prototype是个对象
+    console.log(Animal.prototype.constructor == Animal)//true
+    console.log(a.__proto__ == Animal.prototype) //true __proto__在new的时候会自动加载在实例对象上。在现代浏览器里可以看到
+    console.log(b.__proto__ == Animal.prototype) //true
+    console.log(a.__proto__.__proto__) //Object {} 最后会找到最上面的boject对象
+    console.log(a.__proto__.run == a.run) //true
+    
+    /**
+    所以，在prototype对象上定义的方法会被所有实例共享，这不就是复用吗？
+    */
+</script>
+
+</html>

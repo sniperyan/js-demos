@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>test</title>
+    <script src="../jquery-3.2.1.min.js"></script>
+    <script>
+        /**
+引入事件机制（观察者模式）
+
+还是上面的那个例子，如果我们希望输入字的时候超过5个字就弹出警告。该怎么办呢。
+
+小白可能会说，那简单啊直接改下bind方法：
+var TextCount = Base.extend({
+  ...
+  bind:function(){
+    var self = this;
+    self.get('input').on('keyup',function(){
+      if(self._getNum() > 5){
+        alert('超过了5个字了。。。')
+      }
+      self.render();
+    });
+  },
+  ...
+})
+
+的确也是一种方法，但是太low了，代码严重耦合。当这种需求特别特别多，代码会越来越乱。
+
+这个时候就要引入事件机制，也就是经常说的观察者模式。
+注意这边的事件机制跟平时的浏览器那些事件不是一回事，要分开来看。
+
+什么是观察者模式呢，官方的解释就不说了，直接拿这个例子来说。
+
+想象一下base是个机器人会说话，他会一直监听输入的字数并且汇报出去（通知）。
+而你可以把耳朵凑上去，听着他的汇报（监听）。发现字数超过5个字了，你就做些操作。
+
+所以这分为两个部分，一个是通知，一个是监听。
+
+假设通知是 fire方法，监听是on。于是我们可以这么写代码：
+
+var TextCount = Base.extend({
+  ...
+  bind:function(){
+    var self = this;
+    self.get('input').on('keyup',function(){
+      //通知,每当有输入的时候，就报告出去。
+      self.fire('Text.input',self._getNum())
+      self.render();
+    });
+  },
+  ...
+})
+
+$(function() {
+  var t = new TextCount({
+    input:$("#J_input")
+  });
+  //监听这个输入事件
+  t.on('Text.input',function(num){
+    //可以获取到传递过来的值
+    if(num>5){
+       alert('超过了5个字了。。。')
+    }
+  })
+})
+fire用来触发一个事件，可以传递数据。而on用来添加一个监听。这样组件里面只负责把一些关键的事件抛出来，
+至于具体的业务逻辑都可以添加监听来实现。没有事件的组件是不完整的。
+
+下面我们看看怎么实现这套事件机制。
+实现起来并不复杂，只要使用this.__events存下所有的监听函数。在fire的时候去找到并且执行就行了。
+
+*/
+       
+    </script>
+</head>
+
+<body>
+    <input type="text" id="J_input" />
+</body>
+
+</html>

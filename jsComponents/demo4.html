@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>test</title>
+    <script src="../jquery-3.2.1.min.js"></script>
+    <script>
+        /**
+面向对象
+
+demo3的写法已经可以满足绝大多数需求了。
+
+但是呢，当一个页面特别复杂，当我们需要的组件越来越多，当我们需要做一套组件。
+仅仅用这个就不行了。首先的问题就是，这种写法太灵活了，写单个组件还可以。
+如果我们需要做一套风格相近的组件，而且是多个人同时在写。那真的是噩梦。
+
+在编程的圈子里，面向对象一直是被认为最佳的编写代码方式。比如java，
+就是因为把面向对象发挥到了极致，所以多个人写出来的代码都很接近，维护也很方便。
+但是很不幸的是，javascript不支持class类的定义。但是我们可以模拟。
+
+下面我们先实现个简单的javascript类：
+*/
+        var Class = (function () {
+            var _mix = function (r, s) {
+                for (var p in s) {
+                    if (s.hasOwnProperty(p)) {
+                        r[p] = s[p]
+                    }
+                }
+            }
+
+            var _extend = function () {
+
+                //开关 用来使生成原型时,不调用真正的构成流程init
+                this.initPrototype = true
+                var prototype = new this()
+                this.initPrototype = false
+
+                var items = Array.prototype.slice.call(arguments) || []
+                var item
+
+                //支持混入多个属性，并且支持{}也支持 Function
+                while (item = items.shift()) {
+                    _mix(prototype, item.prototype || item)
+                }
+
+
+                // 这边是返回的类，其实就是我们返回的子类
+                function SubClass() {
+                    if (!SubClass.initPrototype && this.init)
+                        this.init.apply(this, arguments)//调用init真正的构造函数
+                }
+
+                // 赋值原型链，完成继承
+                SubClass.prototype = prototype
+
+                // 改变constructor引用
+                SubClass.prototype.constructor = SubClass
+
+                // 为子类也添加extend方法
+                SubClass.extend = _extend
+
+                return SubClass
+            }
+            //超级父类
+            var Class = function () { }
+            //为超级父类添加extend方法
+            Class.extend = _extend
+
+            return Class
+        })()
+
+        //继承超级父类，生成个子类Animal，并且混入一些方法。这些方法会到Animal的原型上。
+        //另外这边不仅支持混入{}，还支持混入Function
+        var Animal = Class.extend({
+            init: function (opts) {
+                this.msg = opts.msg
+                this.type = "animal"
+            },
+            say: function () {
+                alert(this.msg + ":i am a " + this.type)
+            }
+        })
+
+
+        //继承Animal，并且混入一些方法
+        var Dog = Animal.extend({
+            init: function (opts) {
+                //并未实现super方法，直接简单使用父类原型调用即可
+                Animal.prototype.init.call(this, opts)
+                //修改了type类型
+                this.type = "dog"
+            }
+        })
+
+        //new Animal({msg:'hello'}).say()
+
+        new Dog({ msg: 'hi' }).say()
+
+        /**
+        使用很简单，超级父类具有extend方法，可以继承出一个子类。子类也具有extend方法。
+
+这边要强调的是，继承的父类都是一个也就是单继承。但是可以通过extend实现多重混入
+
+抽象出base
+可以看到，我们的组件有些方法，是大部分组件都会有的。
+
+比如init用来初始化属性。
+比如render用来处理渲染的逻辑。
+比如bind用来处理事件的绑定。
+当然这也是一种约定俗成的规范了。如果大家全部按照这种风格来写代码，开发大规模组件库就变得更加规范，相互之间配合也更容易。
+
+这个时候面向对象的好处就来了，我们抽象出一个Base类 .其他组件编写时都继承它。
+
+        */
+    </script>
+</head>
+
+<body>
+    <input type="text" id="J_input" />
+</body>
+
+</html>

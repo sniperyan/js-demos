@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title></title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+
+<body>
+
+</body>
+<script>
+    /**
+    可以看到我们将Animal的实例对象暂且叫做a，作为 Dog的prototype，
+    这样 Dog的实例对象dog的__proto__指向Dog的prototype也就是a,
+    a的__proto__再指向Animal的prototype对象，这个对象上有run方法。
+    于是我们调用dog.run()的时候会一层层的往上追溯一直找到run方法执行。于
+    是通过原型链我们就让 Dog继承了Animal的方法run。
+
+需要注意的是，如果在子类的prototype对象上也有run方法，就会覆盖父类的，
+因为查找时在自己上面就找到了，就不会向上回溯了。
+
+上面是原型链方法的继承。而属性我们则是通过调用父类的构造函数来赋值的。
+因为属性不能所有的实例都公用，应该每个人都有自己的一份，所以不能放在原型上。
+
+上面就是原始时代最简单的类继承了。
+
+    */
+
+
+    function Animal(name) {
+        this.name = name;
+    }
+    Animal.prototype.run = function () {
+        console.log(this.name + "is running!!");
+    }
+    function Dog(name) {
+        //调用父类的构造函数，通过改变this指向将属性赋值到新的实例对象
+        Animal.call(this, name);
+    }
+    Dog.prototype = new Animal();
+    var dog = new Dog("dog");
+    dog.run();//dog is running!!
+
+    /**
+
+    这个时代javascript变得比较重要了，作为非常有用的特性，oo开始被很多人研究。
+
+首先上面的那种简单oo实现方式，其实是有很多问题的。
+1.没有实现传统oo该有的super方法来调用父类方法。作为oo，怎么能没有super呢。
+2.直接将父类实例作为子类的原型，简单粗暴造成多余的原型属性。还有construct的问题。
+这个问题主要是之前代码里面这一句造成的：
+Dog.prototype = new Animal();
+//var dog = new Dog("dog");
+//console.log(dog.__proto__)     Animal {name: undefined}
+执行new Animal()就会执行animal的构造函数，就会在Dog.prototype生成多余的属性值，这边是name。
+而一般属性值为了复用是不能放在原型对象上的。并且由于dog有自己的name属性，原型上的是多余的。
+
+还有construct的问题。
+console.log(dog.constructor == Animal) //true
+console.log(dog.constructor == Dog) //false
+
+
+    */
+
+</script>
+
+</html>
