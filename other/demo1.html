@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title></title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        
+    </head>
+    <body>
+    遍历
+    </body>
+    <script>
+        function a (o1,o2,o3){
+            this.o1 = o1;
+            this.o2 = o2;
+            this.o3 = o3;
+
+        }
+        a.prototype.func= function(params) {
+            
+        }
+        var b = new a(1,2,3)
+        var prop
+        
+        /**
+        for in 可以遍历对象中所有可枚举的对象属性(包括对象自有属性和继承的属性)，
+        会枚举原型链上的属性，可以使用hasOwnProperty过滤掉原型链上的属性
+        */
+        for (prop in b){
+            console.log(prop)
+            // if(b.hasOwnProperty(prop)){
+            //     console.log(prop)
+            // }
+        }
+        /**
+        for of 遍历可迭代的对象（包括Array, Map, Set, arguments等），
+        它主要用来获取对象的属性值，而for...in主要获取对象的属性名。
+        */
+        for (prop of [1,2,2,3]){
+            console.log(prop)
+            // if(b.hasOwnProperty(prop)){
+            //     console.log(prop)
+            // }
+        }
+
+        /**
+        Object.keys()方法会返回一个由给定对象的所有可枚举自身属性的属性名组成的数组，
+        数组中属性名的排列顺序和使用for...in循环遍历该对象时返回的顺序一致。
+        两者最大的区别在于for...in还会遍历出一个对象从其原型链上继承到的可枚举属性
+        */
+        console.log(Object.keys(b))
+        /**
+        Object.getOwnPropertyNames()方法返回一个由指定对象的所有自身属性的属性名（包括不可枚举属性）组成的数组,
+        但不会获取原型链上的属性。该数组对元素是 obj 自身拥有的枚举或不可枚举属性名称字符串。 
+        数组中枚举属性的顺序与通过for...in（或 Object.keys()）迭代该对象属性时一致
+        */
+        console.log(Object.getOwnPropertyNames(b))
+
+
+        /**
+        The map() method creates a new array with the results of calling a provided 
+        function on every element in the calling array.
+        Return value : A new array with each element being the result of the callback function.
+        
+        */
+        var m = [1,2,3,4,5].map(()=>{})
+
+        /**
+        The forEach() method executes a provided function once for each array element.
+        Return value:undefined.
+        */
+        var f = [1,2,3,4,5].forEach(()=>{})
+        console.log(m)
+        console.log(f)
+
+        
+    </script>
+</html>

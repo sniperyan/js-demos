@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title></title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        
+    </head>
+    <body>
+    截取
+    </body>
+    <script>
+        /**
+        stringObject.slice(start,end)
+        返回值:一个新的字符串。包括字符串 stringObject 从 start 开始（包括 start）到 end 结束（不包括 end）为止的所有字符。
+        该方法并不会修改字符串
+        arrayObject.slice(start,end)
+        返回一个新的数组，包含从 start 到 end （不包括该元素）的 arrayObject 中的元素。
+        该方法并不会修改数组，而是返回一个子数组
+
+        String.slice() 与 Array.slice() 相似
+        */
+        var stringObject = '123456';
+        console.log(stringObject.slice(0,5))
+        console.log(stringObject)
+        var arrayObject = [1,2,3,4,5,6];
+        console.log(arrayObject.slice(0,5))
+        console.log(arrayObject)
+
+        /**
+        String 对象的方法 slice()、substring() 和 substr() （不建议使用）都可返回字符串的指定部分。
+        slice() 比 substring() 要灵活一些，因为它允许使用负数作为参数。slice() 与 substr() 有所不同，因为它用两个字符的位置来指定子串，
+        而 substr() 则用字符位置和长度来指定子串。
+        */
+        console.log(stringObject.substring(0,5))
+        console.log(stringObject)
+        
+
+        
+    </script>
+</html>
