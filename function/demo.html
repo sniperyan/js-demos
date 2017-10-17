@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title></title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="css/style.css" rel="stylesheet">
+</head>
+
+<body>
+
+</body>
+<script>
+    /**
+     * 这就叫做“尾调用优化”（Tail call optimization），即只保留内层函数的调用帧。
+     * 如果所有函数都是尾调用，那么完全可以做到每次执行时，调用帧只有一项，这将大大节省内存。
+     * 这就是“尾调用优化”的意义。
+     * 
+     * 
+     * 函数调用自身，称为递归。如果尾调用自身，就称为尾递归。
+递归非常耗费内存，因为需要同时保存成千上百个调用帧，很容易发生“栈溢出”错误（stack overflow）。
+但对于尾递归来说，由于只存在一个调用帧，所以永远不会发生“栈溢出”错误。
+
+由此可见，“尾调用优化”对递归操作意义重大，所以一些函数式编程语言将其写入了语言规格。
+ES6 是如此，第一次明确规定，所有 ECMAScript 的实现，都必须部署“尾调用优化”。
+这就是说，ES6 中只要使用尾递归，就不会发生栈溢出，相对节省内存。
+
+     * 
+     */
+
+    //非尾递归的 Fibonacci 数列实现如下。
+    function Fibonacci(n) {
+        if (n <= 1) { return 1 };
+
+        return Fibonacci(n - 1) + Fibonacci(n - 2);
+    }
+
+    // console.log(Fibonacci(10)) // 89
+    // console.log(Fibonacci(100)) // 堆栈溢出
+    // console.log(Fibonacci(500)) // 堆栈溢出
+
+    //尾递归优化过的 Fibonacci 数列实现如下。
+    function Fibonacci2(n, ac1 = 1, ac2 = 1) {
+        if (n <= 1) { return ac2 };
+
+        return Fibonacci2(n - 1, ac2, ac1 + ac2);
+    }
+    console.log(Fibonacci2(100)) // 573147844013817200000
+    console.log(Fibonacci2(1000)) // 7.0330367711422765e+208
+    console.log(Fibonacci2(10000)) // Infinity
+</script>
+
+</html>
