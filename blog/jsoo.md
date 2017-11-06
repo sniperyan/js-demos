@@ -175,5 +175,6 @@ console.log(dog.constructor == Dog) //true
 
 ## 参考：
 [https://github.com/purplebamboo/blog/issues/14](https://github.com/purplebamboo/blog/issues/14)
+
 [http://es6.ruanyifeng.com/#docs/class](http://es6.ruanyifeng.com/#docs/class)
 
