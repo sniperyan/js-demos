@@ -39,9 +39,17 @@
         //调用父类的构造函数，通过改变this指向将属性赋值到新的实例对象
         Animal.call(this, name);
     }
-    Dog.prototype = new Animal();
+    var F = function () { }; //定义一个空的构造函数F
+    F.prototype = Animal.prototype; //F的原型指向Animal的原型
+    Dog.prototype = new F();//Dog的原型指向F的实例
+    Dog.prototype.constructor = Dog;  //Dog的constructor指向Dog
     var dog = new Dog("dog");
     dog.run();//dog is running!!
+
+
+    console.log(dog.__proto__)    // Animal {constructor: ƒ}
+    console.log(dog.constructor === Animal) // false
+    console.log(dog.constructor === Dog) // true
 
     /**
 

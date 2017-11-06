@@ -42,7 +42,7 @@
     inherit(Dog, Animal);
     var dog = new Dog("dog");
     dog.run();//dog is running!!
-
+    console.log(dog.__proto__)    // Animal {constructor: ƒ}
     console.log(dog.constructor == Animal) //false
     console.log(dog.constructor == Dog) //true
 
