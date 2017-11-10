@@ -348,6 +348,8 @@ export default thunk;
 ```
 redux-thunk返回一个函数，函数的第一个参数是一个object对象{ dispatch, getState }，这个参数在applyMiddleware源码里`chain = middlewares.map(middleware => middleware(middlewareAPI))` 以`middlewareAPI`名称传入，第二个参数`next`在applyMiddleware源码里`dispatch = compose(...chain)(store.dispatch)`以`store.dispatch`名称传入。
 
+***注意，在每个中间件里存在两个 dispatch 功能。一个是 { dispatch, getState }，这是在 middlewareAPI对象里的 dispatch 方法，另一个是 next，它是 chain 链条的最后一环 dispatch = compose(...chain, dispatch)。如果你不想在将 action 传递到在你之后的中间件里，你应该直接显式地调用 dispatch，不要调用 next。如果你发现这个 action 对象不包含你感兴趣的数据，是你要忽略的 action，这时应该传给 next，它可能是其他中间件的处理目标。***
+
 由此可见，每个中间件的格式都应该是接收一个`{ dispatch, getState }`，返回一个`(dispatch) => { return function(action) { ... } }`。
 
 为什么中间件要放在dispatch的时候？借用阮老师的一张图：
