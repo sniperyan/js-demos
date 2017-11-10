@@ -287,9 +287,73 @@ export default function bindActionCreators(actionCreators, dispatch) {
     return boundActionCreators
 }
 ```
-bindActionCreators的代码比较简单，就是将actionCreator和dispatch联结在一起。对于多个 actionCreator，我们可以像reducers一样，组织成一个key/action的组合。原本的 reducer(state, action) 模式，我们用 createStore(reducer, initialState) 转换成 store.dispatch(action)，现在发现还不够，怎么做？再封装一层呗，这就是函数式思想的体现，通过反复组合，将多参数模式，转化为单参数模式。
+bindActionCreators的代码比较简单，就是将actionCreator和dispatch联结在一起。对于多个 actionCreator，我们可以像reducers一样，组织成一个key/action的组合。***原本的 reducer(state, action) 模式，我们用 createStore(reducer, initialState) 转换成 store.dispatch(action)，现在发现还不够，怎么做？再封装一层呗，这就是函数式思想的体现，通过反复组合，将多参数模式，转化为单参数模式***。
 
 ## applyMiddleware
+```javascript
+export default function applyMiddleware(...middlewares) {
+    //返回的函数在createStore中被调用
+    return (createStore) => (reducer, preloadedState, enhancer) => {
+        const store = createStore(reducer, preloadedState, enhancer)
+        let dispatch = store.dispatch //拿到真正的 dispatch
+        let chain = []
+        // 将最重要的两个方法 getState/dispatch 整合出来,这2个就是中间件需要传的参数
+        const middlewareAPI = {
+            getState: store.getState,
+            dispatch: (action) => dispatch(action)
+        }
+        // 依次传递给 middleware，让它们有控制权,这里的middlewareAPI就是中间件的第一个参数
+        chain = middlewares.map(middleware => middleware(middlewareAPI))
+        dispatch = compose(...chain)(store.dispatch) // 再组合出新的 dispatch
+        //这里的store.dispatch是中间件返回值接收的参数，即redux-thunk源码里的next
+
+        // 返回新的store dispatch被新的dispatch替代
+        return {
+            ...store,
+            dispatch
+        }
+    }
+}
+```
+顾名思义，applyMiddleware就是中间件的意思。applyMiddleware接收中间件为参数，并返回一个以createStore为参数的函数；同时applyMiddleware又是createStore函数中的第三个参数，所以我们回到createStore的代码，找到了：
+```javascript
+export default function createStore(reducer, preloadedState, enhancer) {
+
+
+    if (typeof enhancer !== 'undefined') {
+        if (typeof enhancer !== 'function') {
+            throw new Error('Expected the enhancer to be a function.')
+        }
+
+        return enhancer(createStore)(reducer, preloadedState)
+    }
+}
+```
+当createStore中传了第三个参数的时候，会执行enhancer(createStore)(reducer, preloadedState,enhancer)，这是一个柯里化函数。下面看一个经典的中间件redux-thunk的源码：
+```javascript
+function createThunkMiddleware(extraArgument) {
+  return ({ dispatch, getState }) => next => action => {
+    if (typeof action === 'function') {
+      return action(dispatch, getState, extraArgument);
+    }
+
+    return next(action);
+  };
+}
+
+const thunk = createThunkMiddleware();
+thunk.withExtraArgument = createThunkMiddleware;
+
+export default thunk;
+```
+redux-thunk返回一个函数，函数的第一个参数是一个object对象{ dispatch, getState }，这个参数在applyMiddleware源码里`chain = middlewares.map(middleware => middleware(middlewareAPI))` 以`middlewareAPI`名称传入，第二个参数`next`在applyMiddleware源码里`dispatch = compose(...chain)(store.dispatch)`以`store.dispatch`名称传入。
+
+由此可见，每个中间件的格式都应该是接收一个`{ dispatch, getState }`，返回一个`(dispatch) => { return function(action) { ... } }`。
+
+为什么中间件要放在dispatch的时候？借用阮老师的一张图：
+
+![redux-sourcecode3](../img/redux-sourcecode3.png)
+
 
 ## 参考
 [https://github.com/antgod/blog/blob/master/文章/react源码解析系列/6.redux源码解析.md](https://github.com/antgod/blog/blob/master/文章/react源码解析系列/6.redux源码解析.md)
