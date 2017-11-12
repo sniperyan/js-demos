@@ -228,7 +228,7 @@ HTML5提供了 `history.pushState()` 和 `history.replaceState() `方法用来�
 测试必须使用本地服务器上进行测试，如果使用file://的方式打开页面，会报错，`Uncaught SecurityError: A history state object with URL 'file:///C:/xxx/xxx/xxx/xxx.html' cannot be created in a document with origin 'null'.`  因为pushState的url和当前的Url必须是同源的，而file://的形式是不存在同源的说法的，所以我们必须用http://localhost的方式。
 
 ## 总结
-基于上面hash和history的demo，可以选择hash或者history形式
+基于上面hash和history的demo，可以选择hash或者history形式，***因为hash改变页面url和history.pushState或者history.replaceState改变页面url都不会刷新页面***
 * hash需要监听hashchange，所有的路由映射都保存在一个对象或者数组中，当hash变化会触发hashchange的回调，判断当前hash值对应哪个路由页面，并只把这个页面渲染出来，其余为Null
 * history跟hash类似，只是监听的为popstate事件，而只有前进或者后退会触发popstate的监听，其他比如a标签的点击，或者button按钮的点击，需要自己封装逻辑：***通过history.pushState或者history.replaceState改变页面url（但是这个改变并不会触发页面刷新也不会触发popstate回调），再根据改变后的url进行页面刷新操作***
 
