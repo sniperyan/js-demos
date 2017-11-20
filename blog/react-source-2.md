@@ -341,3 +341,76 @@ ReactDOMComponent.prototype._diff = function(diffQueue, nextChildrenElements) {
 }
 ```
 
+* flattenChildren方法把数组集合转成了对象map,以element的key作为标识，当然对于text文本或者没有传入key的element,直接用index作为标识。
+* `generateComponentChildren`生成新的子节点的component对象集合，调用_shouldUpdateReactComponent判断是否是更新，如果是更新则继续`receiveComponent`处理更新，否则工厂方法重新生成实例
+* 对比老的子节点集合`prevChildren` 与新的子节点集合`nextChildren`的差异 （这里已经被转成map了） ：遍历 `nextChildren` 的key，用这个key去取`prevChildren`的 value，直接对比两个value，如果是同一对象，说明是使用的同一个component，往差异队列`diffQueue` push该元素，类型为`MOVE_EXISTING `。 else if (prevChild) 说明老的还存在，就是element不同，但是component一样。我们需要把它对应的老的element删除并且添加新的节点，`diffQueue` 添加2个对象，类型为`REMOVE_NODE`  `INSERT_MARKUP` 。   对于老的节点里有，新的节点里没有的那些，直接删除掉，`diffQueue` 添加类型为`REMOVE_NODE`
+
+***_patch的实现:***
+```javascript
+//用于将childNode插入到指定位置
+function insertChildAt(parentNode, childNode, index) {
+    var beforeChild = parentNode.children().get(index);
+    beforeChild ? childNode.insertBefore(beforeChild) : childNode.appendTo(parentNode);
+}
+
+ReactDOMComponent.prototype._patch = function(updates) {
+    var update;
+    var initialChildren = {};
+    var deleteChildren = [];
+    for (var i = 0; i < updates.length; i++) {
+        update = updates[i];
+        if (update.type === UPATE_TYPES.MOVE_EXISTING || update.type === UPATE_TYPES.REMOVE_NODE) {
+            var updatedIndex = update.fromIndex;
+            var updatedChild = $(update.parentNode.children().get(updatedIndex));
+            var parentID = update.parentID;
+
+            //所有需要更新的节点都保存下来，方便后面使用
+            initialChildren[parentID] = initialChildren[parentID] || [];
+            //使用parentID作为简易命名空间
+            initialChildren[parentID][updatedIndex] = updatedChild;
+
+
+            //所有需要修改的节点先删除,对于move的，后面再重新插入到正确的位置即可
+            deleteChildren.push(updatedChild)
+        }
+
+    }
+
+    //删除所有需要先删除的
+    $.each(deleteChildren, function(index, child) {
+        $(child).remove();
+    })
+
+
+    //再遍历一次，这次处理新增的节点，还有修改的节点这里也要重新插入
+    for (var k = 0; k < updates.length; k++) {
+        update = updates[k];
+        switch (update.type) {
+            case UPATE_TYPES.INSERT_MARKUP:
+                insertChildAt(update.parentNode, $(update.markup), update.toIndex);
+                break;
+            case UPATE_TYPES.MOVE_EXISTING:
+                insertChildAt(update.parentNode, initialChildren[update.parentID][update.fromIndex], update.toIndex);
+                break;
+            case UPATE_TYPES.REMOVE_NODE:
+                // 什么都不需要做，因为上面已经帮忙删除掉了
+                break;
+        }
+    }
+}
+```
+
+_patch主要就是挨个遍历差异队列，遍历两次，第一次删除掉所有需要变动的节点，然后第二次插入新的节点还有修改的节点。这里为什么可以直接挨个的插入呢？原因就是我们在diff阶段添加差异节点到差异队列时，本身就是有序的，也就是说对于新增节点（包括move和insert的）在队列里的顺序就是最终dom的顺序，所以我们才可以挨个的直接根据index去塞入节点。
+
+## 总结
+首先是所有的component都实现了receiveComponent来负责自己的更新，而浏览器默认元素的更新最为复杂，也就是经常说的 diff algorithm。
+
+react有一个全局_shouldUpdateReactComponent用来根据element的key来判断是更新还是重新渲染，这是第一个差异判断。比如自定义元素里，就使用这个判断，通过这种标识判断，会变得特别高效。
+
+* 自定义元素的更新，主要是更新render出的节点，做甩手掌柜交给render出的节点的对应component去管理更新。
+* text节点的更新很简单，直接更新文案。
+* 浏览器基本元素的更新，分为两块：
+    * 先是更新属性，对比出前后属性的不同，局部更新。并且处理特殊属性，比如事件绑定。
+    * 然后是子节点的更新，子节点更新主要是找出差异对象，找差异对象的时候也会使用上面的_shouldUpdateReactComponent来判断，如果是可以直接更新的就会递归调用子节点的更新，这样也会递归查找差异对象，这里还会使用lastIndex这种做一种优化，使一些节点保留位置，之后根据差异对象操作dom元素（位置变动，删除，添加等）。
+
+参考: [https://github.com/purplebamboo/blog/issues/3](https://github.com/purplebamboo/blog/issues/3)
