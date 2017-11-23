@@ -1,5 +1,5 @@
 # react 15.6 源码学习
-React 源码使用了大量的继承，依赖注入，Mixin，还有好多事务，看起来很吃力，下面简单总结一下
+React 源码使用了大量的继承，依赖注入，Mixin，还有好多事务，看起来很累，下面简单总结一下
 
 ## 组件生命周期
 组件生命周期是一种钩子函数，比如`componentWillMount`，`componentDidMount`在自定义元素组件`ReactCompositeComponent`的装载方法`mountComponent`中调用的，在渲染dom标记之前调用`componentWillMount`，渲染完dom标记之后调用`componentDidMount`
@@ -343,3 +343,15 @@ function makeTextContent(textContent) {
 ```
 更新该如何操作是在`DOMChildrenOperations.js`中定义具体的操作节点方法，直接操作DOM节点定义在`setInnerHTML.js`  `setTextContent.js`中。
 
+挨个遍历差异队列，遍历两次，第一次删除掉所有需要变动的节点，然后第二次插入新的节点还有修改的节点。这里为什么可以直接挨个的插入呢？原因就是我们在diff阶段添加差异节点到差异队列时，本身就是有序的，也就是说对于新增节点（包括move和insert的）在队列里的顺序就是最终dom的顺序，所以我们才可以挨个的直接根据index去塞入节点。
+
+## 参考
+[https://zhuanlan.zhihu.com/p/20346379](https://zhuanlan.zhihu.com/p/20346379)
+
+[https://github.com/purplebamboo/blog/issues/2](https://github.com/purplebamboo/blog/issues/2)
+
+[https://github.com/purplebamboo/blog/issues/3](https://github.com/purplebamboo/blog/issues/3)
+
+[https://juejin.im/post/599b8f066fb9a0247637d61b#heading-2](https://juejin.im/post/599b8f066fb9a0247637d61b#heading-2)
+
+[https://zhuanlan.zhihu.com/p/25883536](https://zhuanlan.zhihu.com/p/25883536)
