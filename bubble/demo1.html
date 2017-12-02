@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title></title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+</head>
+
+<body>
+
+</body>
+<script>
+    /**
+     * 题目是：自己实现find方法，达到这样输出的效果
+     * 使用冒泡排序（当然也可以不用）
+     * find方法是一个闭包函数，返回一个对象，对象的原型上有where和orderBy方法
+     * 其中where方法返回this，这样就可以实现链式调用
+     * 
+     */
+    var data = [{
+            userId: 8,
+            title: 'title1'
+        },
+        {
+            userId: 11,
+            title: 'other'
+        },
+        {
+            userId: 15,
+            title: null
+        },
+        {
+            userId: 1,
+            title: 'title2'
+        },
+        {
+            userId: 119,
+            title: 'title2'
+        },
+        {
+            userId: 54,
+            title: 'title2'
+        },
+    ];
+    var find = function (origin) {
+        var func = function (origin) {
+            this.origin = origin
+        }
+        func.prototype.where = function (filterObj) {
+            var arr = this.origin
+            var keys = Object.keys(filterObj)
+            if (keys.length !== 1) {
+                throw new Error('where args error,can not parse')
+            }
+            var filterKey = keys[0];
+            var regex = filterObj[filterKey]
+            var nextarr = arr.filter(function (element) {
+                if (element.title && element.title.match(regex)) {
+                    return element
+                }
+            });
+            this.origin = nextarr;
+            return this
+        }
+        func.prototype.orderBy = function (...args) {
+            var arr = this.origin;
+            var temp = {};
+            // ignore type checking
+            //冒泡排序
+            for (var i = 0; i < arr.length; i++) {
+                for (var ii = 0; ii < arr.length - 1; ii++) {
+                    if (args[1] === 'desc') {
+                        //降序
+                        if (arr[ii][args[0]] < arr[ii + 1][args[0]]) {
+                            temp = arr[ii];
+                            arr[ii] = arr[ii + 1];
+                            arr[ii + 1] = temp
+                        }
+                    } else {
+                        //升序
+                        if (arr[ii][args[0]] > arr[ii + 1][args[0]]) {
+                            temp = arr[ii];
+                            arr[ii] = arr[ii + 1];
+                            arr[ii + 1] = temp
+                        }
+                    }
+                }
+            }
+            return arr
+        }
+        return new func(origin)
+    }
+    var result = find(data).where({
+        "title": /\d$/
+    }).orderBy('userId', 'desc');
+    console.log(result)
+</script>
+
+</html>

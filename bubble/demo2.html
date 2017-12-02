@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title></title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+</head>
+
+<body>
+
+</body>
+<script>
+    /**
+     * 不用冒泡排序
+    */
+    var data = [
+        { userId: 8, title: 'title1' },
+        { userId: 11, title: 'other' },
+        { userId: 15, title: null },
+        { userId: 19, title: 'title2' }
+    ];
+    var find = function (origin) {
+        var a = function(origin){
+            this.origin = origin
+        }
+        a.prototype.where = function(regex){
+            var arr = this.origin
+            var nextarr = arr.filter(function(element) {
+                if (element.title && element.title.match(regex)){
+                    return element
+                }
+            });
+            this.origin = nextarr;
+            return this
+        }
+        a.prototype.orderBy = function(...args){
+            var result = [];
+            var arr = this.origin;
+            var indexArr = []
+            // get userId arr
+            this.origin = this.origin.map(function(element) {
+                indexArr.push(element[args[0]])
+                return element
+            });
+            //sort
+            if(args[1]==='desc'){
+                indexArr = indexArr.sort(function(a,b){
+                    return a-b
+                })
+
+            }else{
+                indexArr = indexArr.sort(function(a,b){
+                    return b-a
+                })
+            }
+            indexArr.forEach((item,index)=>{
+                this.origin.forEach(sItem=>{
+                    if(sItem[args[0]]===item){
+                        result.push(sItem)
+                    }
+                })
+            })
+            return result
+        }
+        return new a(origin)
+    }
+    console.log(find(data).where(/\d$/).orderBy('userId', 'desc'))
+    // var result = find(data).where({
+    //     "title": /\d$/
+    // }).orderBy('userId', 'desc');
+
+
+
+
+</script>
+
+</html>

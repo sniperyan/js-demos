@@ -10,6 +10,7 @@ console.log(process.argv.slice(2))  // 取后面参数
 
 //process.env：返回一个对象，成员为当前Shell的环境变量，比如process.env.HOME。
 console.log(process.env)
+console.log(process.env.NODE_ENV)
 
 
 //process.pid：返回一个数字，表示当前进程的进程号。
