@@ -7,14 +7,14 @@
     <script src="../jquery-3.2.1.min.js"></script>
     <script>
         /**
-函数闭包的写法
+        函数闭包的写法
 
-这种写法，把所有的东西都包在了一个自动执行的闭包里面，
-所以不会受到外面的影响，
-并且只对外公开了TextCountFun构造函数，
-生成的对象只能访问到init,render方法。
-这种写法已经满足绝大多数的需求了。事实上大部分的jQuery插件都是这种写法。
-*/
+        这种写法，把所有的东西都包在了一个自动执行的闭包里面，
+        所以不会受到外面的影响，
+        并且只对外公开了TextCountFun构造函数，
+        生成的对象只能访问到init,render方法。
+        这种写法已经满足绝大多数的需求了。事实上大部分的jQuery插件都是这种写法。
+        */
         var TextCount = (function () {
             //私有方法，外面将访问不到
             var _bind = function (that) {
@@ -49,10 +49,13 @@
             };
             //返回构造函数
             return TextCountFun;
-        });
+
+        })();
 
         $(function () {
-            new TextCount().init({ id: '#J_input' }).render();
+            new TextCount().init({
+                id: '#J_input'
+            }).render();
         })
     </script>
 </head>
