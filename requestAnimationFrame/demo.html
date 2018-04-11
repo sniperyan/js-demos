@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Page Title</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" type="text/css" media="screen" href="main.css" />
+    <script src="main.js"></script>
+</head>
+
+<style>
+    .box {
+        position: fixed;
+        right: 10px;
+        bottom: 10px;
+        height: 30px;
+        width: 50px;
+        text-align: center;
+        padding-top: 20px;
+        background-color: lightblue;
+        border-radius: 20%;
+        overflow: hidden;
+    }
+
+    .box:hover:before {
+        top: 50%
+    }
+
+    .box:hover .box-in {
+        visibility: hidden;
+    }
+
+    .box:before {
+        position: absolute;
+        top: -50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        content: '回到顶部';
+        width: 40px;
+        color: peru;
+        font-weight: bold;
+
+    }
+
+    .box-in {
+        visibility: visible;
+        display: inline-block;
+        height: 20px;
+        width: 20px;
+        border: 3px solid black;
+        border-color: white transparent transparent white;
+        transform: rotate(45deg);
+    }
+</style>
+
+<body>
+    <div style="height: 200px; background-color: antiquewhite"></div>
+    <div style="height: 200px; background-color: aqua"></div>
+    <div style="height: 200px; background-color: blue"></div>
+    <div style="height: 200px; background-color: blueviolet"></div>
+    <div style="height: 200px; background-color: cadetblue"></div>
+    <div style="height: 200px; background-color: chocolate"></div>
+    <div style="height: 200px; background-color: darkblue"></div>
+    <div style="height: 200px; background-color: darkgreen"></div>
+    <div style="height: 200px; background-color: firebrick"></div>
+    <div style="height: 200px; background-color: gold"></div>
+    <div style="height: 200px; background-color: #097460"></div>
+    <div style="height: 200px; background-color: #109947"></div>
+    <div style="height: 200px; background-color: #3aa223"></div>
+    <div style="height: 200px; background-color: #409"></div>
+    <div style="height: 200px; background-color: #509150"></div>
+    <div id="box" class="box">
+        <div class="box-in"></div>
+    </div>
+</body>
+<script>
+    
+    /**
+    window.requestAnimationFrame() 将告知浏览器你马上要开始动画效果了，
+    后者需要在下次动画前调用相应方法来更新画面。
+    这个方法就是传递给window.requestAnimationFrame()的回调函数。
+
+也可这个方法原理其实也就跟setTimeout/setInterval差不多，
+通过递归调用同一方法来不断更新画面以达到动起来的效果，
+但它优于setTimeout/setInterval的地方在于它是由浏览器专门为动画提供的API，
+在运行时浏览器会自动优化方法的调用，并且如果页面不是激活状态下的话，
+动画会自动暂停，有效节省了CPU开销。
+    */
+
+
+    var timer = null;
+    box.onclick = function () {
+        cancelAnimationFrame(timer);
+        timer = requestAnimationFrame(function fn() {
+            var oTop = document.body.scrollTop || document.documentElement.scrollTop;
+            if (oTop > 0) {
+                document.body.scrollTop = document.documentElement.scrollTop = oTop - 50;
+                timer = requestAnimationFrame(fn);
+            } else {
+                cancelAnimationFrame(timer);
+            }
+        });
+    }
+</script>
+
+</html>
