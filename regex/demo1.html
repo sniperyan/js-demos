@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Page Title</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" type="text/css" media="screen" href="main.css" />
+    <script src="main.js"></script>
+</head>
+
+<body>
+
+</body>
+<script>
+    /**
+     * 创建正则有2种方式
+     * 1.正则表达式字面量   
+     *  const regex = /^[a-zA-Z]+[0-9]*\W?_$/gi;
+     * 2.调用RegExp对象的构造函数
+     *  let regex = new RegExp(/^[a-zA-Z]+[0-9]*\W?_$/, "gi");
+     * 方法1性能更好
+     */
+
+
+    //简单模式
+    const regex1 = /abc/;  //匹配了在一个字符串中，仅仅字符 'abc' 同时出现并按照这个顺序
+    console.log(regex1.test("Hi, do you know your abc's?")) // true
+    console.log(regex1.test("Grab crab")) // false
+
+    //使用特殊字符
+    const regex2 = /ab*c/;  //匹配了一个单独的 'a' 后面跟了零个或者多个 'b'（*的意思是前面一项出现了零个或者多个），且后面跟着 'c' 的任何字符组合
+    console.log(regex2.test("cbbabbbbcdebc")) // true
+    console.log(regex2.test("abbbebc")) // false
+
+    /**
+     *    特殊字符 列表
+     */
+    //   \ 转义字符    或者 \b 表示不是字符串b而是特殊字符
+    console.log(/a*/.test("Grab crab")) //  true /a*/ 代表会匹配 0 个或者多个 a
+    console.log(/a\*/.test("aaaa")) // false    模式 /a\*/ 将 '*' 的特殊性移除，从而可以匹配像 "a*" 这样的字符串
+    console.log(/a\*/.test("aaaa*")) // true 模式 /a\*/ 将 '*' 的特殊性移除，从而可以匹配像 "a*" 这样的字符串
+    //   ^匹配输入的开始
+    console.log(/^A/.test("an A")) //  false   /^A/匹配开头为A
+    console.log(/^A/.test("An E")) // true     /^A/匹配开头为A
+    //   $匹配输入的结束
+    console.log(/t$/.test("eater")) //  false   /t$/ 以t结尾
+    console.log(/t$/.test("eat")) // true     /t$/ 以t结尾
+
+    // * 匹配前一个表达式0次或多次。等价于 {0,}。
+    console.log(/bo*/.test("A bird warbled"))  //true
+    console.log(/bo*/.test("A goat grunted"))  //false
+    console.log(/bo{0,}/.test("A bird warbled"))  //true
+    console.log(/bo{0,}/.test("A goat grunted"))  //false
+    // + 匹配前面一个表达式1次或者多次。等价于 {1,}。
+    console.log(/bo+/.test("A bord warbled"))  //true
+    console.log(/bo+/.test("A bird warbled"))  //false
+    console.log(/bo{1,}/.test("A bord warbled"))  //true
+    console.log(/bo{1,}/.test("A bird warbled"))  //false
+    console.log(/bo{2,}/.test("A bord warbled"))  //false
+    console.log(/bo{2,}/.test("A bird warbled"))  //false
+    console.log(/bo{2,}/.test("A bood warbled"))  //true /bo{2,}/ 匹配b后面的o出现2次或多次,o必须连续出现
+    console.log(/bo{2,}/.test("A bod warbledo"))  //false /bo{2,}/ 匹配b后面的o出现2次或多次,o必须连续出现
+    // ? 匹配前面一个表达式0次或者1次。等价于 {0,1}。
+    console.log(/e?le?/.test("angel"))  //true
+    console.log(/e?le?/.test("angle"))  //true
+    console.log(/e?le?/.test("oslo"))  //true
+    // . (小数点）匹配除换行符之外的任何单个字符
+    console.log(/.n/.test("hi,nay"))  //true
+    console.log(/.n/.test("nay"))  //false
+    /** 
+     * (x) 匹配 'x' 并且记住匹配项
+     * 模式中的 \1 和 \2 匹配字符串的后两个单词
+     * 注意 \1、\2、\n 是用在正则表达式的匹配环节
+     * 在正则表达式的替换环节，则要使用像 $1、$2、$n 这样的语法，例如，'bar foo'.replace( /(...) (...)/, '$2 $1' )
+    */
+    console.log(/(foo) (bar) \1 \2/.test("foo bar foo bar"))  //true
+    console.log(/(foo) (bar) \1 \2/.test("foo bar bar foo"))  //false
+
+    /** 
+     * (?:x)
+     * 匹配 'x' 但是不记住匹配项。这种叫作非捕获括号，使得你能够定义为与正则表达式运算符一起使用的子表达式。
+     * 来看示例表达式 /(?:foo){1,2}/。如果表达式是 /foo{1,2}/，{1,2}将只对 ‘foo’ 的最后一个字符 ’o‘ 生效。如果使用非捕获括号，则{1,2}会匹配整个 ‘foo’ 单词。
+     * 
+     * x(?=y)
+     * 匹配'x'仅仅当'x'后面跟着'y'.这种叫做正向肯定查找。
+     * 例如，/Jack(?=Sprat)/会匹配到'Jack'仅仅当它后面跟着'Sprat'。
+     * /Jack(?=Sprat|Frost)/匹配‘Jack’仅仅当它后面跟着'Sprat'或者是‘Frost’。
+     * 但是‘Sprat’和‘Frost’都不是匹配结果的一部分。
+     * 
+     * x(?!y)
+     * 匹配'x'仅仅当'x'后面不跟着'y',这个叫做正向否定查找。
+     * 例如，/\d+(?!\.)/匹配一个数字仅仅当这个数字后面没有跟小数点的时候。
+     * 正则表达式/\d+(?!\.)/.exec("3.141")匹配‘141’但是不是‘3.141’
+     * 
+     * x|y
+     * 匹配‘x’或者‘y’。
+     * 例如，/green|red/匹配“green apple”中的‘green’和“red apple”中的‘red’
+     * 
+     * {n}
+     * n是一个正整数，匹配了前面一个字符刚好发生了n次。
+     * 比如，/a{2}/不会匹配“candy”中的'a',但是会匹配“caandy”中所有的a，以及“caaandy”中的前两个'a'。
+     * 
+     * {n,m}
+     * n 和 m 都是整数。匹配前面的字符至少n次，最多m次。如果 n 或者 m 的值是0， 这个值被忽略。
+     * 例如，/a{1, 3}/ 并不匹配“cndy”中的任意字符，匹配“candy”中得a，匹配“caandy”中的前两个a，也匹配“caaaaaaandy”中的前三个a。注意，当匹配”caaaaaaandy“时，匹配的值是“aaa”，即使原始的字符串中有更多的a。
+     * 
+     * [xyz]
+     * 一个字符集合。匹配方括号的中任意字符，包括转义序列。
+     * 你可以使用破折号（-）来指定一个字符范围。对于点（.）和星号（*）这样的特殊符号在一个字符集中没有特殊的意义。
+     * 他们不必进行转义，不过转义也是起作用的。
+     * 例如，[abcd] 和[a-d]是一样的。他们都匹配"brisket"中得‘b’,也都匹配“city”中的‘c’。
+     * /[a-z.]+/ 和/[\w.]+/都匹配“test.i.ng”中的所有字符。
+     * 
+     * [^xyz]
+     * 一个反向字符集。也就是说， 它匹配任何没有包含在方括号中的字符。你可以使用破折号（-）来指定一个字符范围。
+     * 任何普通字符在这里都是起作用的。
+     * 例如，[^abc] 和 [^a-c] 是一样的。他们匹配"brisket"中的‘r’，也匹配“chop”中的‘h’。
+     * 
+     * [\b]
+     * 匹配一个退格(U+0008)。（不要和\b混淆了。）
+     * 
+     * 
+    */
+
+    // \b 匹配一个词的边界
+    console.log('moon'.replace(/\bm/, ''))  //匹配moon中得‘m’；
+    console.log('moon'.replace(/oo\b/, ''))  //并不匹配"moon"中得'oo'，因为'oo'被一个“字”字符'n'紧跟着。
+    console.log('moon'.replace(/oon\b/, ''))  ///oon\b/匹配"moon"中得'oon'，因为'oon'是这个字符串的结束部分。这样他没有被一个“字”字符紧跟着。
+
+    // \d 匹配一个数字。等价于[0-9]。
+    console.log('B2 is the suite number.'.replace(/[0-9]/, ''))
+
+    // \D 匹配一个非数字字符。等价于[^0-9]。
+    console.log('B2 is the suite number.'.replace(/[^0-9]/, ''))
+
+    /**
+     * \f 匹配一个换页符 (U+000C)。
+     * \n 匹配一个换行符 (U+000A)。
+     * \r 匹配一个回车符 (U+000D)。
+     * \s 匹配一个空白字符，包括空格、制表符、换页符和换行符。
+     * \S 匹配一个非空白字符。
+     * \t 匹配一个水平制表符 (U+0009)。
+     * \v 匹配一个垂直制表符 (U+000B)。
+     * 
+     * \w 匹配一个单字字符（字母、数字或者下划线）。
+     * 等价于[A-Za-z0-9_]。
+     * 例如, /\w/ 匹配 "apple," 中的 'a'，"$5.28,"中的 '5' 和 "3D." 中的 '3'。
+     * 
+     * \W 匹配一个非单字字符。
+     * 等价于[^A-Za-z0-9_]。
+     * 例如, /\W/ 或者 /[^A-Za-z0-9_]/ 匹配 "50%." 中的 '%'。
+     * 
+     * \n 在正则表达式中，它返回最后的第n个子捕获匹配的子字符串(捕获的数目以左括号计数)。
+     */
+
+
+    /**
+     * 正则表达式可以被用于RegExp的exec和test方法以及 String的match、replace、search和split方法
+     * 
+     * exec 一个在字符串中执行查找匹配的RegExp方法，它返回一个数组（未匹配到则返回null）。
+     * test 一个在字符串中测试是否匹配的RegExp方法，它返回true或false。
+     * match 一个在字符串中执行查找匹配的String方法，它返回一个数组或者在未匹配到时返回null。
+     * search 一个在字符串中测试匹配的String方法，它返回匹配到的位置索引，或者在失败时返回-1。
+     * replace 一个在字符串中执行查找匹配的String方法，并且使用替换字符串替换掉匹配到的子字符串。
+     * split 一个使用正则表达式或者一个固定字符串分隔一个字符串，并将分隔后的子字符串存储到数组中的String方法。
+     */
+
+    var myArray = /d(b+)d/g.exec("cdbbdbsbz");
+    console.log(myArray)
+
+
+    /**
+     * 正则表达式有四个可选参数进行全局和不分大小写搜索。
+     * 这些参数既可以单独使用也可以一起使用在任何顺序和包含正则表达式的部分中。
+     * 
+     * g 全局搜索。
+     * i 不区分大小写搜索。
+     * m 多行搜索。
+     * y 执行“粘性”搜索,匹配从目标字符串的当前位置开始，可以使用y标志。
+     */
+
+    var re = /\w+\s/g;
+    var str = "fee fi fo fum";
+    var myArray = str.match(re);
+    console.log(myArray);
+    console.log(str.replace(re,''));
+
+
+
+
+
+
+
+
+
+
+
+</script>
+
+</html>
