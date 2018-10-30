@@ -15,6 +15,10 @@
                 console.log(err)
 
             })
+            setTimeout(() => { console.log(123) }, 2000);
+            /**
+            不会退出进程、终止脚本执行，2 秒之后还是会输出123。这就是说，Promise 内部的错误不会影响到 Promise 外部的代码，通俗的说法就是“Promise 会吃掉错误”。
+            */
             //throw new Error('1')
         </script>
     </head>
