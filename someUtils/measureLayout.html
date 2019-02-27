@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js"> <!--<![endif]-->
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <title></title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet" href="">
+        <style>
+            #d1{
+                width: 200px;
+                height: 200px;
+                border: 1px solid #000000;
+            }
+            #d2{
+                width: 300px;
+                height: 300px;
+                border: 1px solid #000000;
+                margin-top: 20px;
+            }
+        </style>
+    </head>
+    <body>
+        <!--[if lt IE 7]>
+            <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="#">upgrade your browser</a> to improve your experience.</p>
+        <![endif]-->
+        
+        <div id="d1">
+            d1
+        </div>
+        <div id="d2">
+                d2
+            </div>
+    </body>
+    <script>
+        /**
+         *
+         * like react native View api onLayout 
+         * ViewLayout = {
+            x: number,
+            y: number,
+            width: number,
+            height: number
+        };
+         *
+         * */ 
+        let d1 = document.getElementById('d1');
+        let d2 = document.getElementById('d2');
+
+        function getRect(node) {
+            const height = node.offsetHeight;
+            const width = node.offsetWidth;
+            let left = node.offsetLeft;
+            let top = node.offsetTop;
+            return { height, left, top, width };
+        }
+        
+        function measureLayout(node, relativeNode=document.body) {
+            const relativeRect = getRect(relativeNode);
+            const { height, left, top, width } = getRect(node);
+            const x = left - relativeRect.left;
+            const y = top - relativeRect.top;
+            return { x, y, width, height };
+        }
+        console.log(measureLayout(d1))
+        console.log(measureLayout(d2))
+        
+
+
+
+    </script>
+</html>
