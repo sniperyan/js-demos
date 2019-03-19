@@ -1,0 +1,7 @@
+@function vw($px) {  //设计稿540px宽度
+  @return ($px / 540) * 100vw;
+}
+.loadMore{
+  height: 1px;
+  
+}
